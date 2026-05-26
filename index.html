@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrendPulse · Timeline 2000 to 2100</title>
+  <meta name="description" content="100 Jahre Trends auf einen Blick. Vergangenheit, Jetzt, Zukunft als interaktive Zeitstrahl." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📡%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="logo">TP<span class="dot">.</span></div>
+    <nav class="nav">
+      <a class="active" data-jump="hero">Dashboard</a>
+      <a data-jump="filters">Overview</a>
+      <a data-jump="timeline">Timeline</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-crystal" id="hellseherToggle">
+        <span id="crystalIcon">🔮</span>
+        <span id="crystalLabel">Hellseher</span>
+      </button>
+      <span class="btn-logout">Logout</span>
+    </div>
+  </header>
+
+  <!-- FLOATING NEXT EVENT CARD -->
+  <div class="next-event-card" id="nextEventCard">
+    <div class="label">your next major shift</div>
+    <div class="target" id="nextEventTitle">Loading…</div>
+    <div class="meta">
+      <div>in <span class="time" id="nextEventTime">…</span></div>
+      <button class="jump-btn" id="jumpToNext">jump to</button>
+    </div>
+  </div>
+
+  <!-- NOW STICKY -->
+  <div class="now-sticky" id="nowSticky">
+    you are in <strong style="margin-left:4px">2026</strong>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-eyebrow">TrendPulse · Foresight Timeline</div>
+    <h1>
+      <span>From</span> <span class="accent-yellow">2000</span><br>
+      <span class="accent">to</span> 2100<span style="color: var(--ink-mute)">.</span>
+    </h1>
+    <p class="hero-sub">
+      Hundert Jahre auf einer Linie. Scrolle nach unten, um durch die Zeit zu reisen.
+      Was war, was ist, was kommt. Aktiviere Hellseher für reine Zukunftssicht.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="n" id="statTotal">0</div>
+        <div class="l">Events</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="statPast">0</div>
+        <div class="l">Vergangenheit</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="statForecast">0</div>
+        <div class="l">Forecast</div>
+      </div>
+      <div class="stat">
+        <div class="n" id="statVision">0</div>
+        <div class="l">Vision</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENARIO SLIDER -->
+  <section class="scenario-slider" id="scenarioSlider">
+    <div class="slider-head">
+      <div>
+        <div class="slider-eyebrow">Zukunfts Szenario</div>
+        <div class="slider-headline" id="sliderHeadline">Realistic Mix</div>
+        <div class="slider-sub" id="sliderSub">50% utopisch, 50% dystopisch. Die wahrscheinlichste Zukunft.</div>
+      </div>
+      <div class="slider-readout">
+        <div class="slider-emoji" id="sliderEmoji">🌗</div>
+        <div class="slider-value" id="sliderValue">50</div>
+      </div>
+    </div>
+    <div class="slider-track-wrap">
+      <div class="slider-track-gradient"></div>
+      <input type="range" min="0" max="100" value="50" step="1" class="slider-input" id="sliderInput" />
+    </div>
+    <div class="slider-labels">
+      <span>🌑 Dystopie</span>
+      <span>🌗 Mix</span>
+      <span>☀️ Utopie</span>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <section class="filters" id="filters">
+    <span class="filter-label">Filter</span>
+    <button class="chip active yellow" data-filter="all">Alle</button>
+    <button class="chip" data-filter="past">Past</button>
+    <button class="chip" data-filter="now">Now</button>
+    <button class="chip" data-filter="forecast">Forecast</button>
+    <button class="chip" data-filter="vision">Vision</button>
+    <span style="width: 100%; height: 8px;"></span>
+    <span class="filter-label">Pillar</span>
+    <div id="pillarChips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+  </section>
+
+  <!-- DECADE NAV -->
+  <nav class="decade-nav" id="decadeNav">
+    <button data-year="2000">00s</button>
+    <button data-year="2010">10s</button>
+    <button data-year="2020">20s</button>
+    <button data-year="2026">NOW</button>
+    <button data-year="2030">30s</button>
+    <button data-year="2040">40s</button>
+    <button data-year="2050">50s</button>
+    <button data-year="2070">70s</button>
+    <button data-year="2100">2100</button>
+  </nav>
+
+  <!-- TIMELINE -->
+  <main class="timeline" id="timeline">
+    <div class="timeline-spine"></div>
+    <div id="timelineEvents"></div>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-eyebrow" id="modalEyebrow"></div>
+      <h2 id="modalTitle"></h2>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-meta" id="modalMeta"></div>
+    </div>
+  </div>
+
+  <!-- HELLSEHER NEURAL VORTEX BACKGROUND (WebGL) -->
+  <div id="hellseherGrid" aria-hidden="true">
+    <canvas id="hellseherCanvas"></canvas>
+  </div>
+
+  <script src="timeline-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
