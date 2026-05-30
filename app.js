@@ -25,7 +25,10 @@
 
   const MONTHS_DE = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
-  function formatDate(year, month) {
+  function formatDate(year, month, day) {
+    if (day) {
+      return `${day}. ${MONTHS_DE[month - 1]} ${year}`;
+    }
     return `${MONTHS_DE[month - 1]} ${year}`;
   }
 
@@ -275,7 +278,7 @@
         ${confirmedBadge}
         <div class="card-head">
           <span class="pillar-chip pillar-${ev.pillar}">${meta.emoji}<span class="pillar-label"> ${meta.label}</span></span>
-          <span class="date">${formatDate(ev.year, ev.month || 1)}</span>
+          <span class="date">${formatDate(ev.year, ev.month || 1, ev.day)}</span>
         </div>
         <h3>${ev.title}</h3>
         <p>${ev.desc}</p>
@@ -548,7 +551,7 @@
   // ─────────────────────────────────────────────────────
   function openModal(ev) {
     const meta = PILLAR_META[ev.pillar];
-    $("#modalEyebrow").textContent = `${formatDate(ev.year, ev.month || 1)} · ${meta.label} · ${ev.type.toUpperCase()}`;
+    $("#modalEyebrow").textContent = `${formatDate(ev.year, ev.month || 1, ev.day)} · ${meta.label} · ${ev.type.toUpperCase()}`;
     $("#modalTitle").textContent = ev.title;
     $("#modalBody").textContent = ev.desc;
 
@@ -556,7 +559,7 @@
     metaContainer.innerHTML = "";
 
     const pills = [];
-    pills.push(`<span class="pill">📅 ${formatDate(ev.year, ev.month || 1)}</span>`);
+    pills.push(`<span class="pill">📅 ${formatDate(ev.year, ev.month || 1, ev.day)}</span>`);
     pills.push(`<span class="pill">${meta.emoji} ${meta.label}</span>`);
     if (ev.confidence != null) {
       pills.push(`<span class="pill">🎯 ${ev.confidence}% Confidence</span>`);
