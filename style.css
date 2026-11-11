@@ -2141,3 +2141,9 @@ body.hellseher .event-card.size-large { border-color: rgba(255,227,74,0.4) !impo
   .event-card.size-large { width: calc(100% - 40px); }
   .filter-spacer { display: none; }
 }
+
+/* Quellen im Detail-Fenster */
+.modal-quellen { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-soft); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.modal-quellen h4 { width: 100%; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-mute); margin: 0 0 2px; }
+.modal-quellen a { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--line-soft); color: var(--ink-soft); text-decoration: none; }
+.modal-quellen a:hover { background: var(--yellow); color: var(--ink); }

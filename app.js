@@ -358,7 +358,8 @@
       `;
     } else {
       const impacts = impactsFor(ev);
-      const impactLabel = ev.curatedImpact ? "💡 Was könnte passieren?" : "💡 Mögliche Effekte · automatisch";
+      const impactLabel = !ev.curatedImpact ? "💡 Mögliche Effekte · automatisch"
+        : ev.type === "past" ? "💡 Was es bewirkt" : "💡 Was könnte passieren?";
       card.innerHTML = `
         ${confidenceHTML}
         ${confirmedBadge}
@@ -710,13 +711,18 @@
   // NEXT EVENT CARD
   // ─────────────────────────────────────────────────────
   function updateNextEventCard() {
-    const next = EVENTS.find(e =>
-      (e.type === "forecast" || e.type === "vision") &&
-      (e.year * 12 + e.month) > NOW_INDEX
-    );
+    // Tagesgenau: das nächste große Ereignis ab morgen, sonst das nächste überhaupt.
+    const today = new Date(CURRENT_YEAR, CURRENT_MONTH - 1, CURRENT_DAY);
+    const dateOf = (e) => new Date(e.year, e.month - 1, e.day || 1);
+    const upcoming = EVENTS
+      .filter(e => e.type !== "past" && dateOf(e) > today)
+      .sort((a, b) => dateOf(a) - dateOf(b));
+    const next = upcoming.find(e => e.size === "large") || upcoming[0];
     if (!next) return;
+    const days = Math.round((dateOf(next) - today) / 86400000);
     $("#nextEventTitle").textContent = next.title;
-    $("#nextEventTime").textContent = relativeTime(next.year, next.month);
+    $("#nextEventTime").textContent = days === 1 ? "1 Tag"
+      : days < 45 ? `${days} Tagen` : relativeTime(next.year, next.month);
     $("#jumpToNext").addEventListener("click", () => jumpToYear(next.year));
   }
 
@@ -839,13 +845,18 @@
     $("#modalTitle").textContent = ev.title;
 
     const impacts = impactsFor(ev);
-    const impactTitle = ev.curatedImpact ? "Was könnte passieren?" : "Mögliche Effekte (automatisch generiert)";
+    const impactTitle = !ev.curatedImpact ? "Mögliche Effekte (automatisch generiert)"
+      : ev.type === "past" ? "Was es bewirkt" : "Was könnte passieren?";
+    const quellen = Array.isArray(ev.quellen) ? ev.quellen.filter(u => /^https:\/\//.test(u)) : [];
+    const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
     $("#modalBody").innerHTML = `
       <p>${esc(ev.desc)}</p>
       <div class="modal-impacts ${ev.curatedImpact ? "" : "is-generated"}">
         <h4>💡 ${impactTitle}</h4>
         <ul>${impacts.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
       </div>
+      ${quellen.length ? `<div class="modal-quellen"><h4>Quellen</h4>${quellen.map(u =>
+        `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(host(u))} ↗</a>`).join("")}</div>` : ""}
     `;
 
     const pills = [

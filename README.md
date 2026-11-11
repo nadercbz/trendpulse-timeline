@@ -169,6 +169,21 @@ Dashboard/
 
 ---
 
+
+### Recherche übernehmen (seit 11.11.2026)
+
+Ergebnisse als JSON (`updates` für bestehende Titel, `neu` für neue Ereignisse, mit `quellen`) laufen über:
+
+```bash
+node tools/uebernehmen.mjs datei.json --probe   # nur prüfen
+node tools/uebernehmen.mjs datei.json           # schreiben
+node validate-data.js
+```
+
+Status `eingetreten` und `abgesagt` setzen den Eintrag auf bestätigt, `unklar` lässt ihn unverändert. Quellen erscheinen im Detail-Fenster. Die Seite springt beim Öffnen immer auf den heutigen Tag, Heute, Past und Forecast ergeben sich aus dem Datum des Geräts.
+
+---
+
 ## 🎬 Erweiterungs Ideen
 
 - [ ] Search Bar
