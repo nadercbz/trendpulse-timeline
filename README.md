@@ -7,7 +7,7 @@
 ## 🚀 Starten
 
 ### Variante A: über Claude Preview (empfohlen)
-Bereits konfiguriert in `Projects/18_New Horizon/.claude/launch.json`.
+Bereits konfiguriert in `Projects/16_New Horizon/.claude/launch.json`.
 Server Name: `trendpulse-dashboard` auf Port 8765.
 
 ### Variante B: manuell im Terminal

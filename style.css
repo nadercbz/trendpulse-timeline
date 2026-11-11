@@ -936,27 +936,46 @@ body.hellseher .event-card.is-confirmed h3 {
   flex: 1;
   min-width: 0;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+/* Innere Content-Spalte: badge + datum + titel gestapelt */
+.event-card.size-small .card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  gap: 1px;
 }
 .event-card.size-small .pillar-chip {
-  font-size: 10px;
-  padding: 2px 6px;
+  font-size: 14px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  line-height: 1;
 }
 .event-card.size-small .pillar-chip .pillar-label {
   display: none;
 }
+.event-card.size-small .confirmed-badge {
+  font-size: 8px;
+  padding: 2px 5px;
+  margin-bottom: 1px;
+}
 .event-card.size-small .date {
   font-size: 10px;
   margin-left: 0;
+  white-space: nowrap;
 }
 .event-card.size-small h3 {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.3;
-  margin: 2px 0 0 0;
+  margin: 0;
   letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .event-card.size-small p {
   display: none;
@@ -1117,24 +1136,37 @@ body.hellseher .impact-list li::before {
 }
 .event-card.size-small.expanded .card-head {
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+}
+.event-card.size-small.expanded .card-content {
+  gap: 4px;
 }
 .event-card.size-small.expanded .pillar-chip {
-  font-size: 11px;
-  padding: 3px 10px;
+  font-size: 16px;
+  padding: 4px 8px;
+  margin-top: 2px;
 }
 .event-card.size-small.expanded .pillar-chip .pillar-label {
-  display: inline;
+  display: none;
+}
+.event-card.size-small.expanded .confirmed-badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  margin-bottom: 2px;
 }
 .event-card.size-small.expanded .date {
   font-size: 11px;
+  white-space: normal;
 }
 .event-card.size-small.expanded h3 {
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin: 0 0 2px 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 .event-card.size-small.expanded p {
   display: block;
@@ -1249,32 +1281,9 @@ body.hellseher .event-card .pillar-chip { opacity: 0.85; }
 body.hellseher .event-card .pillar-label { color: #C8C5BE; }
 body.hellseher .event-row.past { display: none; }
 body.hellseher .event-row.now { display: none; }
-body.hellseher .year-marker[data-year="2000"],
-body.hellseher .year-marker[data-year="2001"],
-body.hellseher .year-marker[data-year="2003"],
-body.hellseher .year-marker[data-year="2004"],
-body.hellseher .year-marker[data-year="2005"],
-body.hellseher .year-marker[data-year="2006"],
-body.hellseher .year-marker[data-year="2007"],
-body.hellseher .year-marker[data-year="2008"],
-body.hellseher .year-marker[data-year="2009"],
-body.hellseher .year-marker[data-year="2010"],
-body.hellseher .year-marker[data-year="2011"],
-body.hellseher .year-marker[data-year="2012"],
-body.hellseher .year-marker[data-year="2013"],
-body.hellseher .year-marker[data-year="2014"],
-body.hellseher .year-marker[data-year="2015"],
-body.hellseher .year-marker[data-year="2016"],
-body.hellseher .year-marker[data-year="2017"],
-body.hellseher .year-marker[data-year="2018"],
-body.hellseher .year-marker[data-year="2019"],
-body.hellseher .year-marker[data-year="2020"],
-body.hellseher .year-marker[data-year="2021"],
-body.hellseher .year-marker[data-year="2022"],
-body.hellseher .year-marker[data-year="2023"],
-body.hellseher .year-marker[data-year="2024"],
-body.hellseher .year-marker[data-year="2025"],
-body.hellseher .year-marker[data-year="2026"] { display: none; }
+/* Vergangene Jahre komplett ausblenden. Die Klasse setzt app.js aus dem
+   echten Datum, damit hier nicht jedes Jahr ein Selektor dazukommt. */
+body.hellseher .year-block.is-past-year { display: none; }
 body.hellseher .year-marker .year {
   background: rgba(8,8,10,0.85);
   color: #FFE34A;
@@ -1781,3 +1790,354 @@ body.hellseher #hellseherCanvas {
 /* HIDDEN UTILITY */
 .hidden { display: none !important; }
 .fade-out { opacity: 0; transform: translateY(10px); }
+
+/* ═══════════════════════════════════════════════════════
+   JAHRES-ACCORDION
+   Ohne Collapse ist 2026 allein eine Scrollstrecke, die
+   niemand bis zum Ende liest.
+   ═══════════════════════════════════════════════════════ */
+.year-block {
+  position: relative;
+}
+.year-block.collapsed .year-body { display: none; }
+.year-block.year-empty { display: none; }
+
+.year-marker {
+  cursor: pointer;
+  gap: 10px;
+  user-select: none;
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  transition: background var(--t-fast);
+}
+.year-marker:hover { background: rgba(15,15,15,0.04); }
+.year-marker:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.year-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+  pointer-events: none;
+}
+.year-marker:hover .year-meta,
+.year-block.collapsed .year-meta {
+  opacity: 1;
+  transform: translateX(0);
+}
+.year-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.year-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.year-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.year-chev {
+  font-size: 11px;
+  color: var(--ink-mute);
+  transition: transform var(--t-fast);
+}
+.year-block.collapsed .year-chev { transform: rotate(-90deg); }
+
+/* ─── MONATSMARKER ─── */
+.month-marker {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 10px;
+  position: relative;
+  z-index: 2;
+}
+.month-marker span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  background: var(--bg);
+  padding: 2px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed var(--line);
+}
+
+/* ═══════════════════════════════════════════════════════
+   FILTERBAR — klebt beim Scrollen, sonst muss man für
+   jede Filteränderung ganz nach oben.
+   ═══════════════════════════════════════════════════════ */
+.filters {
+  position: sticky;
+  top: 78px;
+  z-index: 90;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 14px 48px;
+  background: rgba(242,240,235,0.92);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid var(--line-soft);
+  max-width: none;
+}
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.pillar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filter-spacer { flex: 1; }
+.filter-meta {
+  font-size: 12px;
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+
+.chip-mini {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-mute);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--t-fast);
+  white-space: nowrap;
+}
+.chip-mini:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--bg-soft);
+}
+.chip-count {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── SUCHE ─── */
+.search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 12px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+#searchInput {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 8px 34px 8px 32px;
+  width: 240px;
+  transition: all var(--t-fast);
+}
+#searchInput::placeholder { color: var(--ink-mute); }
+#searchInput:focus {
+  outline: none;
+  border-color: var(--ink);
+  width: 300px;
+}
+#searchInput::-webkit-search-cancel-button { cursor: pointer; }
+.search-kbd {
+  position: absolute;
+  right: 10px;
+  font-size: 10px;
+  font-family: var(--font-sans);
+  color: var(--ink-mute);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  pointer-events: none;
+}
+#searchInput:focus ~ .search-kbd { opacity: 0; }
+
+/* ─── SZENARIO HINWEIS ─── */
+.slider-note {
+  margin-top: 14px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+  border-top: 1px solid var(--line-soft);
+  padding-top: 12px;
+}
+.slider-note strong { color: var(--ink-soft); font-weight: 700; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  position: relative;
+  z-index: 2;
+}
+.empty-emoji { font-size: 40px; margin-bottom: 12px; }
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.empty-state p {
+  font-size: 13px;
+  color: var(--ink-mute);
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LARGE CARDS — müssen auch groß aussehen, sonst ist die
+   Größenstufe eine Behauptung ohne Wirkung.
+   ═══════════════════════════════════════════════════════ */
+.event-card.size-large {
+  width: calc(56% - 40px);
+  padding: 22px 26px;
+  border-width: 2px;
+  border-color: var(--ink);
+  box-shadow: var(--shadow-md);
+}
+.event-card.size-large h3 {
+  font-size: 21px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.event-card.size-large p { font-size: 14px; }
+.event-card.size-large:hover { box-shadow: var(--shadow-lg); }
+
+/* ─── AUTO-GENERIERTE IMPACTS EHRLICH KENNZEICHNEN ─── */
+.impact-section.is-generated .impact-toggle { opacity: 0.62; font-style: italic; }
+.impact-section.is-generated .impact-list li { color: var(--ink-mute); }
+
+/* ─── MODAL IMPACTS ─── */
+.modal-impacts {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.modal-impacts h4 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+}
+.modal-impacts ul { list-style: none; display: grid; gap: 8px; }
+.modal-impacts li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding-left: 16px;
+  position: relative;
+}
+.modal-impacts li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--ink-mute);
+}
+.modal-impacts.is-generated li { color: var(--ink-mute); font-style: italic; }
+
+/* ─── DECADE NAV NOW BUTTON ─── */
+.decade-nav .now-btn {
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 800;
+}
+.decade-nav .now-btn.active {
+  background: var(--ink);
+  color: var(--yellow);
+}
+
+/* ═══════════════════════════════════════════════════════
+   HELLSEHER VARIANTEN FÜR DIE NEUEN ELEMENTE
+   ═══════════════════════════════════════════════════════ */
+body.hellseher .filters {
+  background: rgba(8,8,10,0.9);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+body.hellseher .year-marker:hover { background: rgba(255,227,74,0.08); }
+body.hellseher .year-count,
+body.hellseher .year-chev { color: #888480; }
+body.hellseher .month-marker span {
+  background: rgba(8,8,10,0.85);
+  color: #888480;
+  border-color: rgba(255,255,255,0.14);
+}
+body.hellseher .chip-mini {
+  color: #C8C5BE;
+  border-color: rgba(255,255,255,0.14);
+}
+body.hellseher .chip-mini:hover {
+  color: #FFE34A;
+  border-color: #FFE34A;
+  background: rgba(255,227,74,0.08);
+}
+body.hellseher #searchInput {
+  background: rgba(8,8,10,0.85);
+  border-color: rgba(255,255,255,0.14);
+  color: #F2F0EB;
+}
+body.hellseher #searchInput:focus { border-color: #FFE34A; }
+body.hellseher .search-kbd {
+  color: #888480;
+  border-color: rgba(255,255,255,0.14);
+}
+body.hellseher .slider-note { border-top-color: rgba(255,255,255,0.1); }
+body.hellseher .empty-state h3 { color: #F2F0EB; }
+body.hellseher .event-card.size-large { border-color: rgba(255,227,74,0.4) !important; }
+
+/* ═══════════════════════════════════════════════════════
+   REDUCED MOTION
+   Wer Animationen abstellt, meint auch den Puls und den Vortex.
+   ═══════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .event-card { opacity: 1; transform: none; }
+  #hellseherGrid { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .filters { top: 64px; padding: 12px 20px; }
+  .search-wrap { margin-left: 0; width: 100%; }
+  #searchInput, #searchInput:focus { width: 100%; }
+  .event-card.size-large { width: calc(100% - 40px); }
+  .filter-spacer { display: none; }
+}
